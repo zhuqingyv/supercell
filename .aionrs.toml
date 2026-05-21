@@ -1,0 +1,2 @@
+[providers.openai.compat]
+api_path = "/chat/completions"

@@ -1,0 +1,60 @@
+@import "tailwindcss";
+
+:root {
+  --bg-base:       #0d0d10;
+  --bg-sidebar:    #111114;
+  --bg-elevated:   #1a1a20;
+  --bg-surface:    #202028;
+  --bg-hover:      rgba(255, 255, 255, 0.06);
+
+  --accent:        #7c6af7;
+  --accent-hover:  #6b58e8;
+  --accent-soft:   rgba(124, 106, 247, 0.15);
+  --accent-glow:   rgba(124, 106, 247, 0.25);
+
+  --user-bubble-from: #3d5bd9;
+  --user-bubble-to:   #5472f0;
+  --ai-bubble:        #1a1a22;
+  --ai-bubble-border: #2a2a36;
+
+  --text-primary:   #eeeef5;
+  --text-secondary: #9090a8;
+  --text-muted:     #5a5a70;
+
+  --border-subtle:  rgba(255, 255, 255, 0.07);
+  --border-mid:     rgba(255, 255, 255, 0.12);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background: var(--bg-base);
+  color: var(--text-primary);
+}
+
+#root {
+  width: 100vw;
+  height: 100vh;
+  background: radial-gradient(ellipse at top left, #1a1040 0%, var(--bg-base) 55%);
+}
+
+/* Shared hover utilities — replaces inline onMouseEnter/onMouseLeave JS handlers */
+.hover-text-primary {
+  transition: color 0.15s;
+}
+.hover-text-primary:hover {
+  color: var(--text-primary);
+}
+
+.prompt-suggestion {
+  opacity: 0.75;
+  transition: opacity 0.15s, border-color 0.15s, transform 0.15s;
+}
+.prompt-suggestion:hover {
+  opacity: 1;
+  border-color: var(--border-mid);
+  border-left-color: var(--accent);
+  transform: translateY(-1px);
+}

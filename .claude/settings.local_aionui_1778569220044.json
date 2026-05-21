@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__mnemo__search",
+      "mcp__aionui-team-guide__aion_list_models"
+    ]
+  }
+}

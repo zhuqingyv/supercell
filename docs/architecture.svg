@@ -1,0 +1,144 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 680" font-family="system-ui, -apple-system, sans-serif" font-size="12">
+  <!-- Background -->
+  <rect width="900" height="680" fill="#1a1a2e" rx="8"/>
+
+  <!-- Frontend Box -->
+  <rect x="30" y="30" width="840" height="180" rx="6" fill="#16213e" stroke="#0f3460" stroke-width="1.5"/>
+  <text x="50" y="55" fill="#e94560" font-weight="bold" font-size="14">Frontend (React 19 + Vite + TailwindCSS)</text>
+
+  <!-- Frontend Components -->
+  <rect x="50" y="70" width="120" height="50" rx="4" fill="#0f3460" stroke="#53a8b6" stroke-width="1"/>
+  <text x="110" y="100" fill="#fff" text-anchor="middle">Zustand Store</text>
+
+  <rect x="190" y="70" width="140" height="50" rx="4" fill="#0f3460" stroke="#53a8b6" stroke-width="1"/>
+  <text x="260" y="100" fill="#fff" text-anchor="middle">OpenAI SDK Client</text>
+
+  <rect x="350" y="70" width="120" height="50" rx="4" fill="#0f3460" stroke="#53a8b6" stroke-width="1"/>
+  <text x="410" y="100" fill="#fff" text-anchor="middle">Chat Page</text>
+
+  <rect x="490" y="70" width="130" height="50" rx="4" fill="#0f3460" stroke="#53a8b6" stroke-width="1"/>
+  <text x="555" y="100" fill="#fff" text-anchor="middle">DataLens Page</text>
+
+  <rect x="640" y="70" width="130" height="50" rx="4" fill="#0f3460" stroke="#53a8b6" stroke-width="1"/>
+  <text x="705" y="100" fill="#fff" text-anchor="middle">CSV Import</text>
+
+  <!-- UIKit row -->
+  <rect x="50" y="140" width="100" height="40" rx="4" fill="#1a1a2e" stroke="#53a8b6" stroke-width="0.8"/>
+  <text x="100" y="165" fill="#a0d2db" text-anchor="middle" font-size="11">ChatSidebar</text>
+
+  <rect x="165" y="140" width="90" height="40" rx="4" fill="#1a1a2e" stroke="#53a8b6" stroke-width="0.8"/>
+  <text x="210" y="165" fill="#a0d2db" text-anchor="middle" font-size="11">Message</text>
+
+  <rect x="270" y="140" width="90" height="40" rx="4" fill="#1a1a2e" stroke="#53a8b6" stroke-width="0.8"/>
+  <text x="315" y="165" fill="#a0d2db" text-anchor="middle" font-size="11">UserInput</text>
+
+  <rect x="375" y="140" width="100" height="40" rx="4" fill="#1a1a2e" stroke="#53a8b6" stroke-width="0.8"/>
+  <text x="425" y="165" fill="#a0d2db" text-anchor="middle" font-size="11">FileDropZone</text>
+
+  <rect x="490" y="140" width="110" height="40" rx="4" fill="#1a1a2e" stroke="#53a8b6" stroke-width="0.8"/>
+  <text x="545" y="165" fill="#a0d2db" text-anchor="middle" font-size="11">SchemaPreview</text>
+
+  <rect x="615" y="140" width="100" height="40" rx="4" fill="#1a1a2e" stroke="#53a8b6" stroke-width="0.8"/>
+  <text x="665" y="165" fill="#a0d2db" text-anchor="middle" font-size="11">ChartView</text>
+
+  <!-- Arrow from Frontend to Backend -->
+  <line x1="450" y1="210" x2="450" y2="240" stroke="#e94560" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <text x="460" y="230" fill="#888" font-size="10">HTTP REST</text>
+
+  <!-- Backend Box -->
+  <rect x="30" y="240" width="840" height="310" rx="6" fill="#16213e" stroke="#0f3460" stroke-width="1.5"/>
+  <text x="50" y="265" fill="#e94560" font-weight="bold" font-size="14">Backend (Express 5 · port 3999)</text>
+
+  <!-- Routes -->
+  <rect x="50" y="280" width="150" height="40" rx="4" fill="#0f3460" stroke="#e94560" stroke-width="1"/>
+  <text x="125" y="305" fill="#fff" text-anchor="middle">/api/agents</text>
+
+  <rect x="220" y="280" width="150" height="40" rx="4" fill="#0f3460" stroke="#e94560" stroke-width="1"/>
+  <text x="295" y="305" fill="#fff" text-anchor="middle">/api/datalens</text>
+
+  <!-- Agent System -->
+  <rect x="50" y="340" width="380" height="190" rx="5" fill="#1a1a2e" stroke="#53a8b6" stroke-width="1"/>
+  <text x="70" y="365" fill="#53a8b6" font-weight="bold" font-size="13">Agent System</text>
+
+  <rect x="70" y="380" width="130" height="35" rx="3" fill="#0f3460" stroke="#53a8b6" stroke-width="0.8"/>
+  <text x="135" y="402" fill="#fff" text-anchor="middle" font-size="11">Orchestrator</text>
+  <text x="135" y="414" fill="#888" text-anchor="middle" font-size="9">cron + parallel</text>
+
+  <rect x="220" y="380" width="90" height="35" rx="3" fill="#0f3460" stroke="#53a8b6" stroke-width="0.8"/>
+  <text x="265" y="402" fill="#fff" text-anchor="middle" font-size="11">BaseAgent</text>
+
+  <!-- 5 Agents -->
+  <rect x="70" y="430" width="80" height="30" rx="3" fill="#2d4059" stroke="#53a8b6" stroke-width="0.6"/>
+  <text x="110" y="449" fill="#a0d2db" text-anchor="middle" font-size="10">Product</text>
+
+  <rect x="160" y="430" width="60" height="30" rx="3" fill="#2d4059" stroke="#53a8b6" stroke-width="0.6"/>
+  <text x="190" y="449" fill="#a0d2db" text-anchor="middle" font-size="10">PM</text>
+
+  <rect x="230" y="430" width="80" height="30" rx="3" fill="#2d4059" stroke="#53a8b6" stroke-width="0.6"/>
+  <text x="270" y="449" fill="#a0d2db" text-anchor="middle" font-size="10">Developer</text>
+
+  <rect x="320" y="430" width="70" height="30" rx="3" fill="#2d4059" stroke="#53a8b6" stroke-width="0.6"/>
+  <text x="355" y="449" fill="#a0d2db" text-anchor="middle" font-size="10">Tester</text>
+
+  <rect x="70" y="470" width="80" height="30" rx="3" fill="#2d4059" stroke="#53a8b6" stroke-width="0.6"/>
+  <text x="110" y="489" fill="#a0d2db" text-anchor="middle" font-size="10">Xiao-Q</text>
+
+  <!-- SQLite -->
+  <rect x="220" y="475" width="120" height="35" rx="3" fill="#2d4059" stroke="#fca311" stroke-width="1"/>
+  <text x="280" y="497" fill="#fca311" text-anchor="middle" font-size="11">SQLite (WAL)</text>
+
+  <!-- DataLens Module -->
+  <rect x="460" y="340" width="390" height="190" rx="5" fill="#1a1a2e" stroke="#53a8b6" stroke-width="1"/>
+  <text x="480" y="365" fill="#53a8b6" font-weight="bold" font-size="13">DataLens Module</text>
+
+  <rect x="480" y="380" width="110" height="35" rx="3" fill="#0f3460" stroke="#53a8b6" stroke-width="0.8"/>
+  <text x="535" y="402" fill="#fff" text-anchor="middle" font-size="11">Text-to-SQL</text>
+
+  <rect x="600" y="380" width="120" height="35" rx="3" fill="#0f3460" stroke="#53a8b6" stroke-width="0.8"/>
+  <text x="660" y="402" fill="#fff" text-anchor="middle" font-size="11">Query Pipeline</text>
+
+  <rect x="730" y="380" width="100" height="35" rx="3" fill="#0f3460" stroke="#53a8b6" stroke-width="0.8"/>
+  <text x="780" y="402" fill="#fff" text-anchor="middle" font-size="11">Chart Gen</text>
+
+  <rect x="480" y="430" width="110" height="35" rx="3" fill="#0f3460" stroke="#53a8b6" stroke-width="0.8"/>
+  <text x="535" y="452" fill="#fff" text-anchor="middle" font-size="11">LLM Provider</text>
+
+  <rect x="600" y="430" width="120" height="35" rx="3" fill="#2d4059" stroke="#fca311" stroke-width="1"/>
+  <text x="660" y="452" fill="#fca311" text-anchor="middle" font-size="11">DuckDB Executor</text>
+
+  <rect x="730" y="430" width="100" height="35" rx="3" fill="#0f3460" stroke="#53a8b6" stroke-width="0.8"/>
+  <text x="780" y="452" fill="#fff" text-anchor="middle" font-size="11">Preset Q</text>
+
+  <!-- Pipeline flow -->
+  <text x="480" y="490" fill="#888" font-size="10">NL → SQL → Execute → Correct → ECharts</text>
+
+  <!-- External Services -->
+  <rect x="30" y="580" width="840" height="80" rx="6" fill="#16213e" stroke="#0f3460" stroke-width="1.5"/>
+  <text x="50" y="605" fill="#e94560" font-weight="bold" font-size="14">External Services</text>
+
+  <rect x="200" y="615" width="200" height="35" rx="4" fill="#0f3460" stroke="#fca311" stroke-width="1"/>
+  <text x="300" y="637" fill="#fca311" text-anchor="middle">LLM API (OpenAI-compatible)</text>
+
+  <rect x="500" y="615" width="200" height="35" rx="4" fill="#0f3460" stroke="#fca311" stroke-width="1"/>
+  <text x="600" y="637" fill="#fca311" text-anchor="middle">DuckDB (In-process)</text>
+
+  <!-- Arrows -->
+  <defs>
+    <marker id="arrow" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#e94560"/>
+    </marker>
+  </defs>
+
+  <!-- Frontend to LLM (streaming) -->
+  <path d="M 260 210 Q 260 590 300 615" fill="none" stroke="#fca311" stroke-width="1" stroke-dasharray="4 2" marker-end="url(#arrow)"/>
+  <text x="140" y="400" fill="#fca311" font-size="9" transform="rotate(-70, 140, 400)">Stream Completions</text>
+
+  <!-- Agent to LLM -->
+  <line x1="200" y1="530" x2="280" y2="615" stroke="#fca311" stroke-width="1" stroke-dasharray="4 2" marker-end="url(#arrow)"/>
+
+  <!-- DataLens to LLM -->
+  <line x1="535" y1="465" x2="350" y2="615" stroke="#fca311" stroke-width="1" stroke-dasharray="4 2" marker-end="url(#arrow)"/>
+
+  <!-- DataLens to DuckDB -->
+  <line x1="660" y1="465" x2="600" y2="615" stroke="#fca311" stroke-width="1" stroke-dasharray="4 2" marker-end="url(#arrow)"/>
+</svg>
