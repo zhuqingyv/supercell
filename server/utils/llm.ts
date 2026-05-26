@@ -80,16 +80,37 @@ export async function callLLM(opts: LLMCallOptions): Promise<string> {
 
 /**
  * Extract JSON from an LLM response that may include markdown fences.
+ * Tries fenced blocks first, then falls back to finding the first valid JSON object in the text.
  */
 export function extractJSON<T = unknown>(text: string): T {
+  // Try fenced code block first
   const fenced = text.match(/```(?:json)?\s*([\s\S]*?)```/);
-  const raw = fenced ? fenced[1].trim() : text.trim();
-  try {
-    return JSON.parse(raw) as T;
-  } catch (err) {
-    const preview = raw.slice(0, 200);
+  if (fenced) {
+    try {
+      return JSON.parse(fenced[1].trim()) as T;
+    } catch {
+      // fall through to fallback
+    }
+  }
+
+  // Fallback: find the first valid JSON object in the text
+  const firstBrace = text.indexOf("{");
+  if (firstBrace === -1) {
     throw new Error(
-      `Failed to parse LLM JSON response: ${err instanceof Error ? err.message : String(err)}\nRaw (first 200 chars): ${preview}`
+      `Failed to parse LLM JSON response: no JSON object found.\nRaw (first 500 chars): ${text.slice(0, 500)}`
     );
   }
+
+  for (let end = text.indexOf("}", firstBrace); end !== -1; end = text.indexOf("}", end + 1)) {
+    const candidate = text.slice(firstBrace, end + 1);
+    try {
+      return JSON.parse(candidate) as T;
+    } catch {
+      continue; // try next closing brace
+    }
+  }
+
+  throw new Error(
+    `Failed to parse LLM JSON response: no valid JSON object found.\nRaw (first 500 chars): ${text.slice(0, 500)}`
+  );
 }

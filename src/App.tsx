@@ -1,4 +1,6 @@
-import { memo, useCallback, useEffect, useRef } from "react";
+import { memo, useCallback, useEffect, useRef, useMemo, lazy, Suspense } from "react";
+import { FixedSizeList } from "react-window";
+import AutoSizer from "react-virtualized-auto-sizer";
 import { UserInput } from "./uikit/UserInput";
 import { ChatSidebar } from "./uikit/ChatSidebar";
 import { store } from "./store";
@@ -7,16 +9,26 @@ import { getService } from "./service";
 import { roleModule } from "./service/modules/role";
 import type { Message } from "./service/types";
 import { Message as MessageUI } from "./uikit/Message";
-import { CsvImportPage } from "./features/csv-import";
+
+// 代码分割：延迟加载非首屏模块
+const CsvImportPage = lazy(() => import("./features/csv-import"));
+const DatalensPage = lazy(() => import("./datalens/QueryPanel"));
 
 export default memo(function App() {
   const { state: currentPage } = store.useSelector((state) => state.currentPage);
-  const { state: currentChat } = store.useSelector((state) =>
-    state.chatList.find((chat) => chat.id === state.currentChatId)
+  
+  // 细化 selector：只订阅需要的字段，减少不必要的重渲染
+  const { state: currentChatMessages } = store.useSelector(
+    (state) => state.chatList.find((c) => c.id === state.currentChatId)?.messages ?? []
   );
+  const { state: currentChatId } = store.useSelector((state) => state.currentChatId);
   const { state: currentModel } = store.useSelector((state) => state.currentModel);
   const { state: modelList } = store.useSelector((state) => state.modelList);
   const { state: isLoading } = store.useSelector((state) => state.isLoading);
+  const { state: currentChatInputCache } = store.useSelector(
+    (state) => state.chatList.find((c) => c.id === state.currentChatId)?.userInputCache ?? ""
+  );
+  
   const {
     commitChat,
     updateModelList,
@@ -32,26 +44,41 @@ export default memo(function App() {
   const handlePageChange = useCallback((page: PageKey) => {
     setCurrentPage({ page });
   }, [setCurrentPage]);
-  const { messages: currentChatMessages = [] } = currentChat || {};
+  
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const scrollListRef = useRef<FixedSizeList>(null);
   const abortRef = useRef<AbortController | null>(null);
-  /** Unique ID of the currently active stream — guards setLoading(false) from racing */
   const streamIdRef = useRef<string>("");
   const lastMsgContent = currentChatMessages[currentChatMessages.length - 1]?.content ?? "";
 
-  // Abort any in-flight stream on unmount
+  const userScrolledUpRef = useRef(false);
+  const listContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const container = listContainerRef.current;
+    if (!container) return;
+    const onScroll = () => {
+      const { scrollTop, scrollHeight, clientHeight } = container;
+      userScrolledUpRef.current = scrollHeight - scrollTop - clientHeight > 100;
+    };
+    container.addEventListener("scroll", onScroll, { passive: true });
+    return () => container.removeEventListener("scroll", onScroll);
+  }, []);
+
   useEffect(() => () => { abortRef.current?.abort(); }, []);
 
-  // Scroll on new message
   useEffect(() => {
     const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     messagesEndRef.current?.scrollIntoView({ behavior: prefersReduced ? "auto" : "smooth" });
   }, [currentChatMessages.length]);
 
-  // Follow cursor during streaming
   useEffect(() => {
     if (!isLoading) return;
-    messagesEndRef.current?.scrollIntoView({ behavior: "auto" });
+    requestAnimationFrame(() => {
+      if (!userScrolledUpRef.current) {
+        messagesEndRef.current?.scrollIntoView({ behavior: "auto" });
+      }
+    });
   }, [isLoading, lastMsgContent]);
 
   store.useSelectorWatch(
@@ -148,21 +175,20 @@ export default memo(function App() {
           if (c) c.messages.push({ id: crypto.randomUUID(), role: "assistant", content: "⚠️ 请求失败，请检查网络或模型配置。" });
         });
       } finally {
-        // Only clear loading if this stream is still the active one
         if (streamIdRef.current === streamId) setLoading(false);
       }
     }
   );
 
   const handleInputChange = useCallback((value: string) => {
-    if (currentChat?.id) setUserInputCache({ id: currentChat.id, cache: value });
-  }, [currentChat?.id, setUserInputCache]);
+    if (currentChatId) setUserInputCache({ id: currentChatId, cache: value });
+  }, [currentChatId, setUserInputCache]);
 
   const handleCommit = useCallback((value: string) => {
     if (isLoading) return;
     const messageItem: Message = { id: crypto.randomUUID(), role: "user", content: value };
-    commitChat({ message: messageItem, id: currentChat?.id ?? "default" });
-  }, [isLoading, commitChat, currentChat?.id]);
+    commitChat({ message: messageItem, id: currentChatId ?? "default" });
+  }, [isLoading, commitChat, currentChatId]);
 
   const handleModelChange = useCallback((model: string) => {
     setCurrentModel({ model });
@@ -176,6 +202,27 @@ export default memo(function App() {
   useEffect(() => {
     updateModelList();
   }, [updateModelList]);
+
+  // Message row component for virtual list - 使用 memo 避免不必要的重渲染
+  const MessageRow = useMemo(() => {
+    return memo(({ index, style }: { index: number; style: React.CSSProperties }) => {
+      const message = currentChatMessages[index];
+      if (!message) return null;
+      const isLastAssistant = isLoading && index === currentChatMessages.length - 1 && message.role === "assistant";
+      return (
+        <div style={style} className="px-2">
+          <MessageUI
+            key={message.id}
+            direction={message.role === "user" ? "right" : "left"}
+            content={message.content}
+            isLoading={isLastAssistant && message.content === ""}
+            isStreaming={isLastAssistant && message.content !== ""}
+          />
+        </div>
+      );
+    });
+  }, [currentChatMessages, isLoading]);
+  MessageRow.displayName = "MessageRow";
 
   const NAV_ITEMS: { key: PageKey; label: string }[] = [
     { key: "chat", label: "Chat" },
@@ -208,7 +255,9 @@ export default memo(function App() {
       {/* Page Content */}
       {currentPage === "datalens" ? (
         <div className="flex-1 overflow-y-auto">
-          <CsvImportPage />
+          <Suspense fallback={<div className="flex items-center justify-center h-full text-gray-400">加载中...</div>}>
+            <CsvImportPage />
+          </Suspense>
         </div>
       ) : (
         <div className="flex flex-row flex-1 min-h-0">
@@ -244,26 +293,43 @@ export default memo(function App() {
                     ))}
                   </div>
                 </div>
+              ) : currentChatMessages.length > 20 ? (
+                <div ref={listContainerRef} className="h-full w-full">
+                  <AutoSizer>
+                    {({ height, width }) => (
+                      <FixedSizeList
+                        ref={scrollListRef}
+                        count={currentChatMessages.length}
+                        height={height}
+                        width={width}
+                        itemSize={200}
+                        itemData={currentChatMessages}
+                      >
+                        {MessageRow}
+                      </FixedSizeList>
+                    )}
+                  </AutoSizer>
+                </div>
               ) : (
-                currentChatMessages.map((message, index) => (
-                  <MessageUI
-                    key={message.id ?? index}
-                    direction={message.role === "user" ? "right" : "left"}
-                    content={message.content}
-                    isLoading={
-                      isLoading &&
-                      index === currentChatMessages.length - 1 &&
-                      message.role === "assistant" &&
-                      message.content === ""
-                    }
-                    isStreaming={
+                <div className="flex flex-col gap-4">
+                  {currentChatMessages.map((message, index) => {
+                    const isLastAssistant =
                       isLoading &&
                       index === currentChatMessages.length - 1 &&
                       message.role === "assistant" &&
                       message.content !== ""
-                    }
-                  />
-                ))
+                    return (
+                      <div key={message.id} className="px-2">
+                        <MessageUI
+                          direction={message.role === "user" ? "right" : "left"}
+                          content={message.content}
+                          isLoading={isLastAssistant && message.content === ""}
+                          isStreaming={isLastAssistant && message.content !== ""}
+                        />
+                      </div>
+                    );
+                  })}
+                </div>
               )}
               <div ref={messagesEndRef} />
             </div>
@@ -274,7 +340,7 @@ export default memo(function App() {
                 onCommit={handleCommit}
                 onModelChange={handleModelChange}
                 onChange={handleInputChange}
-                value={currentChat?.userInputCache || ""}
+                value={currentChatInputCache}
                 disabled={isLoading}
                 onStop={handleStop}
               />

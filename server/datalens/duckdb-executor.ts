@@ -29,12 +29,16 @@ export async function closeDB(): Promise<void> {
 
 const BLOCKED_KEYWORDS = [
   "INSERT", "UPDATE", "DELETE", "DROP", "CREATE", "ALTER", "TRUNCATE",
-  "EXEC", "EXECUTE", "GRANT", "REVOKE", "COPY", "ATTACH", "DETACH",
+  "EXEC", "GRANT", "REVOKE", "COPY", "ATTACH", "DETACH",
   "PRAGMA", "INSTALL", "LOAD",
 ];
 
 function isSafeSQL(sql: string): string | null {
-  const trimmed = sql.trim().toUpperCase();
+  // Remove SQL comments (-- and /* */) before checking
+  const cleaned = sql
+    .replace(/--[^]*/g, "")
+    .replace(/\/\*[\s\S]*?\*\//g, "");
+  const trimmed = cleaned.trim().toUpperCase();
   if (!trimmed.startsWith("SELECT") && !trimmed.startsWith("WITH")) {
     return "Only SELECT queries are allowed";
   }

@@ -5,7 +5,7 @@ type Chat = {
   id: string;
   title: string;
   messages: Message[];
-  userInputCache?: string;
+  userInputCache?: string; // TODO: implement input cache (e.g. restore on reconnect)
 };
 
 let updateModelListRequestId = 0;

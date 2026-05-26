@@ -184,6 +184,22 @@ function renderMarkdownBlock(text: string): React.ReactNode {
   return <>{result}</>;
 }
 
+const renderMarkdownBlockCache = new Map<string, React.ReactNode>();
+
+function renderMarkdownBlockCached(text: string): React.ReactNode {
+  if (renderMarkdownBlockCache.has(text)) {
+    return renderMarkdownBlockCache.get(text)!;
+  }
+  const result = renderMarkdownBlock(text);
+  // Limit cache size to prevent memory leaks
+  if (renderMarkdownBlockCache.size > 500) {
+    const firstKey = renderMarkdownBlockCache.keys().next().value;
+    if (firstKey) renderMarkdownBlockCache.delete(firstKey);
+  }
+  renderMarkdownBlockCache.set(text, result);
+  return result;
+}
+
 function renderContent(content: string) {
   const parts = content.split(/(```[\s\S]*?```)/g);
   return parts.map((part, i) => {
@@ -191,7 +207,7 @@ function renderContent(content: string) {
     if (codeMatch) {
       return <CodeBlock key={i} lang={codeMatch[1]} code={codeMatch[2]} />;
     }
-    return <div key={i}>{renderMarkdownBlock(part)}</div>;
+    return <div key={i}>{renderMarkdownBlockCached(part)}</div>;
   });
 }
 
@@ -305,4 +321,4 @@ export const Message = memo(function Message({ direction, content, isLoading, is
       )}
     </div>
   );
-});
+}, (prev, next) => prev.direction === next.direction && prev.content === next.content && prev.isLoading === next.isLoading && prev.isStreaming === next.isStreaming);
